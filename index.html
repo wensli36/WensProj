@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#FFE9D2">
+<title>宝宝照顾小屋 · 全家一起照顾小宝宝</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="app">
+
+  <!-- ================= 顶部信息栏 ================= -->
+  <header class="hud">
+    <div class="logo"><span class="emoji">🍼</span><span class="txt">宝宝照顾小屋</span></div>
+    <div class="hud-spacer"></div>
+    <div class="counter coin-c" id="coinBox"><span id="coinIcon"></span><span id="coinNum">0</span></div>
+    <div class="counter key" id="keyBox"><span id="keyIcon"></span><span id="keyNum">0</span></div>
+    <button class="icon-btn" id="btnMusic" title="背景音乐">🎵</button>
+    <button class="icon-btn" id="btnSet" title="设置">⚙️</button>
+  </header>
+
+  <!-- ================= 家人栏 ================= -->
+  <div class="familybar" id="familybar"></div>
+
+  <!-- ================= 游戏舞台 ================= -->
+  <div class="stage-wrap" id="stageWrap">
+    <div class="stage" id="stage">
+      <div class="layer" id="roomLayer"></div>
+      <div class="layer front" id="frontLayer"></div>
+
+      <!-- 宝宝状态条 -->
+      <div class="statusbar" id="statusbar">
+        <div class="stat"><span>🍚</span><span>饱腹</span><span class="bar full"><i id="barFull" style="width:50%"></i></span><b id="numFull">50</b></div>
+        <div class="stat"><span>😊</span><span>心情</span><span class="bar mood"><i id="barMood" style="width:50%"></i></span><b id="numMood">50</b></div>
+        <div class="stat"><span>🛁</span><span>干净</span><span class="bar clean"><i id="barClean" style="width:50%"></i></span><b id="numClean">50</b></div>
+      </div>
+
+      <!-- 角色与宝宝由脚本插入 -->
+      <div class="fx" id="fx"></div>
+    </div>
+  </div>
+
+  <!-- ================= 底部功能栏 ================= -->
+  <nav class="dock" id="dock">
+    <button class="dock-btn" data-open="feed"  style="--c1:#FFD9A0"><span class="ic">🍼</span><span class="tx">喂食</span></button>
+    <button class="dock-btn" data-open="play"  style="--c1:#C7E9FF"><span class="ic">🧸</span><span class="tx">玩耍</span></button>
+    <button class="dock-btn" data-open="bath"  style="--c1:#BDEBFF"><span class="ic">🛁</span><span class="tx">洗澡</span></button>
+    <button class="dock-btn" data-open="sleep" style="--c1:#DCD3FF"><span class="ic">😴</span><span class="tx">睡觉</span></button>
+    <button class="dock-btn" data-open="shop"  style="--c1:#FFD6E8"><span class="ic">🛒</span><span class="tx">商店</span></button>
+    <button class="dock-btn" data-open="quest" style="--c1:#FFE7B0"><span class="ic">🗺️</span><span class="tx">闯关</span></button>
+  </nav>
+</div>
+
+<!-- ================= 弹层：喂食 ================= -->
+<div class="overlay" id="ov-feed">
+  <div class="sheet">
+    <div class="sheet-head">
+      <span class="sheet-title">🍽️ 给宝宝吃什么？</span>
+      <span class="hint" id="feedHint">宝宝肚子饿的时候喂，会冒出金币哦！</span>
+      <button class="close-x" data-close>✕</button>
+    </div>
+    <div class="grid" id="foodGrid"></div>
+  </div>
+</div>
+
+<!-- ================= 弹层：玩耍 ================= -->
+<div class="overlay" id="ov-play">
+  <div class="sheet">
+    <div class="sheet-head">
+      <span class="sheet-title">🧸 陪宝宝玩什么？</span>
+      <span class="hint">玩耍能让宝宝心情变好！</span>
+      <button class="close-x" data-close>✕</button>
+    </div>
+    <div class="grid" id="toyGrid"></div>
+  </div>
+</div>
+
+<!-- ================= 弹层：商店 ================= -->
+<div class="overlay" id="ov-shop">
+  <div class="sheet">
+    <div class="sheet-head">
+      <span class="sheet-title">🛒 金币小商店</span>
+      <span class="hint">用金币换礼物，礼物会出现在房间里！</span>
+      <button class="close-x" data-close>✕</button>
+    </div>
+    <div class="grid" id="shopGrid"></div>
+  </div>
+</div>
+
+<!-- ================= 弹层：闯关 ================= -->
+<div class="overlay" id="ov-quest">
+  <div class="sheet">
+    <div class="sheet-head">
+      <span class="sheet-title">🗺️ 闯关收集钥匙</span>
+      <span class="hint">完成任务拿钥匙，开宝箱得金币！</span>
+      <button class="close-x" data-close>✕</button>
+    </div>
+    <div class="quest" id="questCard"></div>
+    <div class="chest-area">
+      <button class="chest locked" id="chest">🎁</button>
+      <div class="chest-info" id="chestInfo"></div>
+    </div>
+    <div class="level-list" id="levelList" style="margin-top:12px"></div>
+  </div>
+</div>
+
+<!-- ================= 弹层：设置 ================= -->
+<div class="overlay" id="ov-set">
+  <div class="sheet">
+    <div class="sheet-head">
+      <span class="sheet-title">⚙️ 设置</span>
+      <button class="close-x" data-close>✕</button>
+    </div>
+    <div class="row-set"><span>🎵 背景音乐</span><button class="switch on" id="swMusic"><i></i></button></div>
+    <div class="row-set"><span>🔔 游戏音效</span><button class="switch on" id="swSfx"><i></i></button></div>
+    <div class="row-set"><span>🎼 选择音乐</span><span id="trackBtns"></span></div>
+    <div class="row-set" style="margin-top:8px">
+      <button class="big-btn pink" id="btnReset">🧹 重新开始</button>
+      <span class="hint" style="font-size:14px;color:var(--ink-soft)">进度会自动保存，关掉网页也不会丢</span>
+    </div>
+  </div>
+</div>
+
+<!-- ================= 提示与开屏 ================= -->
+<div class="toast" id="toast"></div>
+
+<div class="splash" id="splash">
+  <div class="splash-card">
+    <div class="splash-chars" id="splashChars"></div>
+    <h1>宝宝照顾小屋</h1>
+    <p>全家一起来照顾小宝宝吧！<br>喂奶 🍼 · 玩耍 🧸 · 洗澡 🛁 · 哄睡 😴<br>宝宝开心就会冒出金币，金币可以换礼物、开宝箱！</p>
+    <button class="big-btn" id="btnStart">▶ 开始游戏</button>
+  </div>
+</div>
+
+<script src="art.js"></script>
+<script src="game.js"></script>
+</body>
+</html>
